@@ -2,15 +2,28 @@
 
 Component to add weather information to your project
 
-#How do I add this to my project?
+##How do I add angular-weather to my project?
 
-You can download this by:
+- Install the module `bower install angular-weather --save`
 
-* Using bower and running `bower install angular-weather`
+- Add the library to your project
 
-````html
-<!-- Or use TAG number for specific version. New versions are auto deployed -->
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/restangular/1.3.1/restangular.js"></script>
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/restangular/1.3.1/restangular.min.js"></script>
-````
+```html
+	<script type="text/javascript" src="bower_components/angular-weather/angular-weather.js"></script>
+```
 
+- Declare the module in your application
+ 
+```javascript
+	 angular.module('myApp', ['angular-weather']);
+```
+
+- User the directive to display the current weather in somewhere
+
+```html
+	<angular-weather city="Houston"></angular-weather>
+```
+
+##License
+
+angular-weather is licensed under the MIT license. See the [LICENSE](LICENSE) file for more details.
