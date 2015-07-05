@@ -1,0 +1,27 @@
+{
+  "name": "angular-weather",
+  "version": "0.0.1",
+  "homepage": "https://github.com/ceoaliongroo/angular-weather",
+  "authors": [
+    "Carlos Mantilla cmantilla@aliongroo.com"
+  ],
+  "description": "Angular module to get and display the actual weather in somewhere. The module  use the openweathermap.org API.",
+  "main": "angular-weather.js",
+  "keywords": [
+    "weather",
+    "climate",
+    "temperature",
+    "clime",
+    "humidity",
+    "forecast",
+    "precipitation"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
