@@ -7,17 +7,17 @@ angular.module('angular-weather', [])
       apikey: ''
     }
   })
-  .directive('nwWeatherTemperature', function () {
+  .directive('angularWeatherTemperature', function () {
     return {
       restrict: 'EA',
       template: '<div> {{ctrlWeather.data.temperature | number:0 }}&deg; <i class="wi {{ctrlWeather.data.iconClass}}"></i></div>',
-      controller: function(nwWeather, nwWeatherIcons) {
-        var weather = this;
+      controller: function TemperatureController(weather, weatherIcons) {
+        var vm = this;
 
         // Request the weather data.
-        nwWeather.get(this.account).then(function(response) {
-          weather.data = response;
-          weather.data.iconClass = nwWeatherIcons[response.icon];
+        weather.get(this.account).then(function(response) {
+          vm.data = response;
+          vm.data.iconClass = weatherIcons[response.icon];
         });
       },
       controllerAs: 'ctrlWeather',
@@ -28,7 +28,7 @@ angular.module('angular-weather', [])
       }
     };
   })
-  .service('nwWeather', function ($q, $http, $timeout, $state, $rootScope, openweatherEndpoint, nwWeatherIcons, Config) {
+  .service('weather', function ($q, $http, $timeout, $state, $rootScope, openweatherEndpoint, weatherIcons, Config) {
     var self = this;
 
     // A private cache key.
@@ -38,7 +38,7 @@ angular.module('angular-weather', [])
     var getWeather;
 
     // Update event broadcast name.
-    var broadcastUpdateEventName = 'nwWeatherChanged';
+    var broadcastUpdateEventName = 'weatherChanged';
 
     /**
      * Return the promise with the category list, from cache or the server.
@@ -126,17 +126,17 @@ angular.module('angular-weather', [])
 
       return {
         temperature: weatherData.main.temp,
-        icon: (angular.isDefined(nwWeatherIcons[weatherData.weather[0].icon])) ? weatherData.weather[0].icon : weatherData.weather[0].id,
+        icon: (angular.isDefined(weatherIcons[weatherData.weather[0].icon])) ? weatherData.weather[0].icon : weatherData.weather[0].id,
         description: weatherData.weather[0].description
       }
     }
 
-    $rootScope.$on('nwClearCache', function() {
+    $rootScope.$on('clearCache', function() {
       cache = {};
     });
 
   })
-  .factory('nwWeatherIcons', function() {
+  .factory('weatherIcons', function() {
     // * All the codes by are based in the openweather API
     //  http://openweathermap.org/wiki/API/Weather_Condition_Codes
     // * Icon based:
