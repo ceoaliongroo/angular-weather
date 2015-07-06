@@ -15,7 +15,7 @@ angular.module('angular-weather', [])
         var vm = this;
 
         // Request the weather data.
-        weather.get(this.city).then(function(response) {
+        weather.get(vm.city).then(function(response) {
           vm.data = response;
           vm.data.iconClass = weatherIcons[response.icon];
         });
@@ -24,7 +24,7 @@ angular.module('angular-weather', [])
       bindToController: true,
       // Isolate scope.
       scope: {
-        city: '='
+        city: '@'
       }
     };
   })
