@@ -7,7 +7,7 @@ angular.module('angular-weather', [])
       apikey: ''
     }
   })
-  .directive('angularWeatherTemperature', function () {
+  .directive('angularWeather', function () {
     return {
       restrict: 'EA',
       template: '<div> {{ctrlWeather.data.temperature | number:0 }}&deg; <i class="wi {{ctrlWeather.data.iconClass}}"></i></div>',
@@ -15,7 +15,7 @@ angular.module('angular-weather', [])
         var vm = this;
 
         // Request the weather data.
-        weather.get(this.account).then(function(response) {
+        weather.get(this.city).then(function(response) {
           vm.data = response;
           vm.data.iconClass = weatherIcons[response.icon];
         });
@@ -24,11 +24,11 @@ angular.module('angular-weather', [])
       bindToController: true,
       // Isolate scope.
       scope: {
-        account: '='
+        city: '='
       }
     };
   })
-  .service('weather', function ($q, $http, $timeout, $state, $rootScope, openweatherEndpoint, weatherIcons, Config) {
+  .service('weather', function ($q, $http, $timeout, $rootScope, openweatherEndpoint, weatherIcons, Config) {
     var self = this;
 
     // A private cache key.
@@ -43,15 +43,13 @@ angular.module('angular-weather', [])
     /**
      * Return the promise with the category list, from cache or the server.
      *
-     * @param accountId - int
-     *  The account ID.
-     * @param categoryId - int
-     *  The category ID.
+     * @param city - string
+     *  The city name. Ex: Houston
      *
      * @returns {Promise}
      */
-    this.get = function(account) {
-      getWeather = $q.when(getWeather || angular.copy(cache.data) || getWeatherFromServer(account));
+    this.get = function(city) {
+      getWeather = $q.when(getWeather || angular.copy(cache.data) || getWeatherFromServer(city));
 
       // Clear the promise cached, after resolve or reject the promise. Permit access to the cache data, when
       // the promise excecution is done (finally).
@@ -67,12 +65,11 @@ angular.module('angular-weather', [])
      *
      * @returns {$q.promise}
      */
-    function getWeatherFromServer(account) {
+    function getWeatherFromServer(city) {
       var deferred = $q.defer();
       var url = openweatherEndpoint;
       var params = {
-        lat: account.center.lat,
-        lon: account.center.lng,
+        q: city,
         units: 'metric',
         APPID: Config.openweather.apikey || ''
       };
@@ -118,8 +115,6 @@ angular.module('angular-weather', [])
      *
      * @param getWeather - {$q.promise)
      *  Promise of list of Weather, comming from cache or the server.
-     * @param accountId - int
-     *  The account ID.
      *
      */
     function prepareWeather(weatherData) {
