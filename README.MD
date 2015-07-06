@@ -8,7 +8,7 @@ Is an Angular module to get and display the actual weather in somewhere. The mod
 
 - Add the library to your project
 ```html
-<script type="text/javascript" src="bower_components/angular-weather/angular-weather.js"></script>
+<script type="text/javascript" src="bower_components/angular-weather/src/angular-weather.js"></script>
 ```
 
 - Declare the module in your application
