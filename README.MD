@@ -1,6 +1,7 @@
 #Angular Weather
 
-Is an Angular module to get and display the actual weather in somewhere. The module  use the openweathermap.org API.
+Is an Angular module to get and display the actual weather in somewhere. The module uses the openweathermap.org API.
+Visit http://openweathermap.org for a license key to use this directive.
 
 ##How do I add angular-weather to my project?
 
@@ -18,7 +19,7 @@ angular.module('myApp', ['angular-weather']);
 
 - User the directive to display the current weather in somewhere
 ```html
-<angular-weather city="Houston"></angular-weather>
+<ng-weather-temperature city="Houston"></ng-weather-temperature>
 ```
 
 ##License
