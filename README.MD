@@ -19,7 +19,7 @@ angular.module('myApp', ['angular-weather']);
 
 - User the directive to display the current weather in somewhere
 ```html
-<ng-weather-temperature city="Houston"></ng-weather-temperature>
+<angular-weather city="Houston"></angular-weather>
 ```
 
 ##License
