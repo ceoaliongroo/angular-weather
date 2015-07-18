@@ -1,5 +1,7 @@
 'use strict';
 
+var extend = angular.extend;
+
 angular.module('angular-weather', [])
   .constant('openweatherEndpoint', 'http://api.openweathermap.org/data/2.5/weather')
   .constant('Config', {
@@ -28,24 +30,38 @@ angular.module('angular-weather', [])
       }
     };
   })
-  .service('weather', function ($q, $http, $timeout, $rootScope, openweatherEndpoint, weatherIcons, Config) {
-    var self = this;
+  .service('weather', function ($q, $http, $interval, $rootScope, openweatherEndpoint, weatherIcons, Config) {
+    var weather = this;
 
+    // interval id, keep it to handle the auto refresh
+    var interval;
     // Promise in progress of Weather.
     var getWeather;
+    // Service options
+    var options = {
+      refresh: true,
+      delay: 3600000 // An hour.
+    };
 
-    // Update event broadcast name.
-    var broadcastUpdateEventName = 'weatherChanged';
+    // Public service API
+    weather.get = get;
 
     /**
      * Return the promise with the category list, from cache or the server.
      *
      * @param city - string
-     *  The city name. Ex: Houston
+     *   The city name. Ex: Houston
+     * @param _options - object
+     *   The options to handle.
+     *    refresh: activate to get new weather information in interval
+     *    of delay time.
+     *    delay: interval of time in miliseconds.
      *
      * @returns {Promise}
      */
-    this.get = function(city) {
+    function get(city, _options) {
+      extend(options, _options, {city: city});
+
       getWeather = $q.when(getWeather || angular.copy(getCache()) || getWeatherFromServer(city));
 
       // Clear the promise cached, after resolve or reject the promise. Permit access to the cache data, when
@@ -55,7 +71,7 @@ angular.module('angular-weather', [])
       });
 
       return getWeather;
-    };
+    }
 
     /**
      * Return Weather array from the server.
@@ -80,6 +96,10 @@ angular.module('angular-weather', [])
         // Prepare the Weather object.
         var weatherData = prepareWeather(data);
         setCache(weatherData);
+
+        // Start refresh automatic the weather, according the interval of time.
+        options.refresh && startRefreshWeather();
+
         deferred.resolve(weatherData);
       });
 
@@ -87,26 +107,15 @@ angular.module('angular-weather', [])
     }
 
     /**
-     * Save Weather in cache, and broadcast en event to inform that the Weather data changed.
+     * Save Weather in cache, and emit en event to inform that the Weather data changed.
      *
      * @param data
      *    Collection resulted from the request.
      */
     function setCache(data) {
       // Save cache Weather data directly to localStorage.
-      localforage.setItem('aw.cache', {
-        data: data,
-        timestamp: new Date()
-      }).then(function(response) {
-        // Saved.
-        console.log(response);
-      });
-
-      // Clear cache in 10 minute.
-      $timeout(function() {
-        cache.data = undefined;
-      }, 600000);
-      $rootScope.$broadcast(broadcastUpdateEventName);
+      localforage.setItem('aw.cache', data);
+      localforage.setItem('aw.updatedAt', new Date());
     }
 
     /**
@@ -114,6 +123,23 @@ angular.module('angular-weather', [])
      */
     function getCache() {
       return localforage('aw.cache');
+    }
+
+    /**
+     * Start an interval to refresh the weather cache data with new server data.
+     */
+    function startRefreshWeather() {
+      interval = $interval(getWeatherFromServer(options.city), options.delay);
+      localforage.setItem('aw.refreshing', true);
+    }
+
+    /**
+     * Stop interval to refresh the weather cache data.
+     */
+    function stopRefreshWeather() {
+      $interval(interval);
+      interval = undefined;
+      localforage.setItem('aw.refreshing', false);
     }
 
     /**
@@ -132,17 +158,6 @@ angular.module('angular-weather', [])
         description: weatherData.weather[0].description
       }
     }
-
-    /**
-     * Listener, this clear the cache data.
-     */
-    $rootScope.$on('clearCache', function() {
-      localforage.removeItem('aw.cache').then(function(err) {
-        // Run this code once the key has been removed.
-        console.log('aw.cache is cleared!');
-      });
-    });
-
 
   })
   .factory('weatherIcons', function() {
