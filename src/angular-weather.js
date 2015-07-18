@@ -30,7 +30,7 @@ angular.module('angular-weather', [])
       }
     };
   })
-  .service('weather', function ($q, $http, $interval, $rootScope, openweatherEndpoint, weatherIcons, Config) {
+  .service('weather', function ($q, $http, $interval, openweatherEndpoint, weatherIcons, Config) {
     var weather = this;
 
     // interval id, keep it to handle the auto refresh
