@@ -31,9 +31,6 @@ angular.module('angular-weather', [])
   .service('weather', function ($q, $http, $timeout, $rootScope, openweatherEndpoint, weatherIcons, Config) {
     var self = this;
 
-    // A private cache key.
-    var cache = {};
-
     // Promise in progress of Weather.
     var getWeather;
 
@@ -97,10 +94,18 @@ angular.module('angular-weather', [])
      */
     function setCache(data) {
       // Cache Weather data.
-      cache = {
+      var cache = {
         data: data,
         timestamp: new Date()
       };
+
+      // Save response directly to localStorage.
+      localforage.setItem('aw.cache', data)
+        .then(function(response) {
+        // Saved.
+        console.log(response);
+      });
+
       // Clear cache in 10 minute.
       $timeout(function() {
         cache.data = undefined;
@@ -127,7 +132,10 @@ angular.module('angular-weather', [])
     }
 
     $rootScope.$on('clearCache', function() {
-      cache = {};
+      localforage.removeItem('aw.cache').then(function(err) {
+        // Run this code once the key has been removed.
+        console.log('aw.cache is cleared!');
+      });
     });
 
   })
