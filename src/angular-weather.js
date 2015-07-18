@@ -93,15 +93,11 @@ angular.module('angular-weather', [])
      *    Collection resulted from the request.
      */
     function setCache(data) {
-      // Cache Weather data.
-      var cache = {
+      // Save cache Weather data directly to localStorage.
+      localforage.setItem('aw.cache', {
         data: data,
         timestamp: new Date()
-      };
-
-      // Save response directly to localStorage.
-      localforage.setItem('aw.cache', data)
-        .then(function(response) {
+      }).then(function(response) {
         // Saved.
         console.log(response);
       });
@@ -114,10 +110,10 @@ angular.module('angular-weather', [])
     }
 
     /**
-     *
+     * Return a promise with the weather data cached.
      */
     function getCache() {
-      return
+      return localforage('aw.cache');
     }
 
     /**
@@ -125,12 +121,11 @@ angular.module('angular-weather', [])
      *
      * Return the Weather object into a promises.
      *
-     * @param getWeather - {$q.promise)
+     * @param weatherData - {$q.promise)
      *  Promise of list of Weather, comming from cache or the server.
      *
      */
     function prepareWeather(weatherData) {
-
       return {
         temperature: weatherData.main.temp,
         icon: (angular.isDefined(weatherIcons[weatherData.weather[0].icon])) ? weatherData.weather[0].icon : weatherData.weather[0].id,
@@ -138,6 +133,9 @@ angular.module('angular-weather', [])
       }
     }
 
+    /**
+     * Listener, this clear the cache data.
+     */
     $rootScope.$on('clearCache', function() {
       localforage.removeItem('aw.cache').then(function(err) {
         // Run this code once the key has been removed.
