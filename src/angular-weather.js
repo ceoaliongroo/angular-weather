@@ -31,9 +31,6 @@ angular.module('angular-weather', [])
   .service('weather', function ($q, $http, $timeout, $rootScope, openweatherEndpoint, weatherIcons, Config) {
     var self = this;
 
-    // A private cache key.
-    var cache = {};
-
     // Promise in progress of Weather.
     var getWeather;
 
@@ -49,7 +46,7 @@ angular.module('angular-weather', [])
      * @returns {Promise}
      */
     this.get = function(city) {
-      getWeather = $q.when(getWeather || angular.copy(cache.data) || getWeatherFromServer(city));
+      getWeather = $q.when(getWeather || angular.copy(getCache()) || getWeatherFromServer(city));
 
       // Clear the promise cached, after resolve or reject the promise. Permit access to the cache data, when
       // the promise excecution is done (finally).
@@ -96,11 +93,15 @@ angular.module('angular-weather', [])
      *    Collection resulted from the request.
      */
     function setCache(data) {
-      // Cache Weather data.
-      cache = {
+      // Save cache Weather data directly to localStorage.
+      localforage.setItem('aw.cache', {
         data: data,
         timestamp: new Date()
-      };
+      }).then(function(response) {
+        // Saved.
+        console.log(response);
+      });
+
       // Clear cache in 10 minute.
       $timeout(function() {
         cache.data = undefined;
@@ -109,16 +110,22 @@ angular.module('angular-weather', [])
     }
 
     /**
+     * Return a promise with the weather data cached.
+     */
+    function getCache() {
+      return localforage('aw.cache');
+    }
+
+    /**
      * Prepare Weather object with order by list, tree and collection indexed by id.
      *
      * Return the Weather object into a promises.
      *
-     * @param getWeather - {$q.promise)
+     * @param weatherData - {$q.promise)
      *  Promise of list of Weather, comming from cache or the server.
      *
      */
     function prepareWeather(weatherData) {
-
       return {
         temperature: weatherData.main.temp,
         icon: (angular.isDefined(weatherIcons[weatherData.weather[0].icon])) ? weatherData.weather[0].icon : weatherData.weather[0].id,
@@ -126,9 +133,16 @@ angular.module('angular-weather', [])
       }
     }
 
+    /**
+     * Listener, this clear the cache data.
+     */
     $rootScope.$on('clearCache', function() {
-      cache = {};
+      localforage.removeItem('aw.cache').then(function(err) {
+        // Run this code once the key has been removed.
+        console.log('aw.cache is cleared!');
+      });
     });
+
 
   })
   .factory('weatherIcons', function() {
