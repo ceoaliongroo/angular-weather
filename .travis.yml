@@ -1,7 +1,10 @@
+# See http://docs.travis-ci.com/user/languages/javascript-with-nodejs/
+# npm install && npm start are run by travis, everything is covered in the package.json file
+
 language: node_js
 node_js:
-- '0.10'
-before_install: gem install compass
+  - "0.10"
+  - "0.12"
 before_script:
-- 'npm install -g bower grunt-cli'
+- 'npm install'
 - 'bower install'
