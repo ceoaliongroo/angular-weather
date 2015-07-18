@@ -31,9 +31,6 @@ angular.module('angular-weather', [])
   .service('weather', function ($q, $http, $timeout, $rootScope, openweatherEndpoint, weatherIcons, Config) {
     var self = this;
 
-    // A private cache key.
-    var cache = {};
-
     // Promise in progress of Weather.
     var getWeather;
 
@@ -49,7 +46,7 @@ angular.module('angular-weather', [])
      * @returns {Promise}
      */
     this.get = function(city) {
-      getWeather = $q.when(getWeather || angular.copy(cache.data) || getWeatherFromServer(city));
+      getWeather = $q.when(getWeather || angular.copy(getCache()) || getWeatherFromServer(city));
 
       // Clear the promise cached, after resolve or reject the promise. Permit access to the cache data, when
       // the promise excecution is done (finally).
@@ -109,6 +106,13 @@ angular.module('angular-weather', [])
     }
 
     /**
+     *
+     */
+    function getCache() {
+      return
+    }
+
+    /**
      * Prepare Weather object with order by list, tree and collection indexed by id.
      *
      * Return the Weather object into a promises.
@@ -129,6 +133,7 @@ angular.module('angular-weather', [])
     $rootScope.$on('clearCache', function() {
       cache = {};
     });
+
 
   })
   .factory('weatherIcons', function() {
