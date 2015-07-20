@@ -3,6 +3,10 @@
 Is an Angular module to get and display the actual weather in somewhere. The module uses the openweathermap.org API.
 Visit http://openweathermap.org for a license key to use this directive.
 
+##WIP - Disclosure
+
+This generator is Work in Progess, defining his archicture and also his implementation. It's not ready to use in `live/production` enviroments but if you want can try, test and contribute.
+
 ##How do I add angular-weather to my project?
 
 - Install the module `bower install angular-weather --save`
