@@ -23,5 +23,12 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "localforage": "~1.2.4"
+  },
+  "devDependencies": {
+    "angular": "~1.4.3",
+    "angular-mocks": "~1.4.3"
+  }
 }
